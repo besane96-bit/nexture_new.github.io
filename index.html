@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>NEXTURE</title>
+<!-- Pretendard & Noto Sans KR (웹폰트) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet"/>
+<style>
+    :root{
+      --nx-deep:#1C2C59; /* Deep Blue */
+      --nx-purple:#8B5CF6; /* Accent */
+      --nx-light:#F5F7FA;
+      --nx-white:#ffffff;
+      --text:#0f172a; /* slate-900 */
+    }
+    *{box-sizing:border-box}
+    html,body{scroll-behavior:smooth}
+    body{margin:0;color:var(--text);background:var(--nx-white);font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .container{max-width:1200px;margin:0 auto;padding:0 16px}
+    a{color:inherit;text-decoration:none}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1rem;border-radius:12px;font-weight:700;border:1px solid transparent}
+    .btn-primary{background:var(--nx-purple);color:#fff}
+    .btn-ghost{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.25)}
+    .btn-outline{border-color:#cbd5e1}
+    .tag{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--nx-purple);background:rgba(139,92,246,.12);padding:.3rem .6rem;border-radius:9999px}
+
+    /* Header */
+    header{position:sticky;top:0;z-index:40;backdrop-filter:saturate(140%) blur(8px);background:rgba(255,255,255,.75);border-bottom:1px solid #e2e8f0}
+    .nav{display:flex;align-items:center;gap:2rem}
+    .logo{display:flex;align-items:center;gap:.5rem;font-weight:900;color:var(--nx-deep)}
+    .logo-mark{width:32px;height:32px;border-radius:10px;background:var(--nx-deep);display:grid;place-items:center;color:#fff}
+    .nav a{padding:.3rem .25rem;border-radius:9999px}
+    .nav a:hover{color:var(--nx-purple)}
+
+    /* Hero Slider */
+    .hero{position:relative;height:68vh;min-height:440px;overflow:hidden}
+    .hero .gradient { position:absolute; inset:0; background: rgba(0,0,0,0.2); pointer-events:none; }
+    .hero-slide{position:absolute;inset:0;opacity:0;transform:scale(1.02);transition:opacity .7s ease, transform .8s ease}
+    .hero-slide.active{opacity:1;transform:scale(1)}
+    .hero-media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .hero .content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;color:#fff}
+    .hero h1{font-size:clamp(28px,5vw,52px);line-height:1.15;margin:0 0 .5rem 0;font-weight:800;max-width:48ch}
+    .hero p{max-width:60ch;color:#e2e8f0}
+    .hero-controls{position:absolute;left:0;right:0;bottom:16px;z-index:3}
+    .dots{display:flex;gap:.35rem}
+    .dot{height:6px;width:14px;border-radius:999px;background:rgba(255,255,255,.55)}
+    .dot.active{background:#fff;width:36px}
+    .arrows{display:flex;gap:.5rem}
+    .arrow{padding:.5rem;border-radius:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25)}
+
+    /* Sections */
+    section{padding:64px 0}
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem}
+    h2{margin:0;font-size:clamp(22px,3.5vw,32px);font-weight:800;color:var(--nx-deep)}
+    .muted{color:#475569}
+
+    /* Cards */
+    .grid{display:grid;gap:24px}
+    .grid.news{grid-template-columns:repeat(1,1fr)}
+    .grid.games{grid-template-columns:repeat(1,1fr)}
+    @media(min-width:768px){.grid.news{grid-template-columns:repeat(3,1fr)}.grid.games{grid-template-columns:repeat(4,1fr)}}
+    .card{border:1px solid #e2e8f0;border-radius:18px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+    .card .body{padding:20px}
+    .card .footer{padding:0 20px 20px 20px;color:#64748b;font-size:.85rem;display:flex;align-items:center;justify-content:space-between}
+    .news-title{margin:.5rem 0 0 0;font-size:1.05rem;font-weight:800}
+
+    /* Game card */
+    #games .card { display:flex; flex-direction:column; }
+    #games .card .body { display:flex; flex-direction:column; flex:1; }
+    .card .body .actions { margin-top:auto; display:flex; gap:.5rem;  padding-top:16px; }
+
+    .thumb{position:relative;aspect-ratio:16/10;background:#e2e8f0;overflow:hidden}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+    .card:hover .thumb img{transform:scale(1.05)}
+
+    /* Jobs/Company */
+    .two-col{display:grid;gap:32px}
+    @media(min-width:768px){.two-col{grid-template-columns:1fr 1fr}}
+    .stat{border:1px solid #e2e8f0;border-radius:16px;padding:16px;text-align:center}
+    .stat .v{font-weight:800;font-size:1.4rem;color:var(--nx-deep)}
+    .stat .l{font-size:.75rem;color:#64748b}
+
+    /* About visual */
+    /* About Full-Width Hero */
+    .about-hero{position:relative;min-height:45vh;display:flex;align-items:center;justify-content:center;text-align:center}
+    .about-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg, rgba(28,44,89,.25), rgba(139,92,246,.25))}
+    .about-hero .inner{position:relative;z-index:1;width:100%;padding:64px 16px;text-align:center}
+    @media(min-width:768px){.about-hero .inner{position:relative;z-index:1;width:100%;padding:64px 16px;text-align:center}}
+    .about-hero h2{color:#fff}
+    .about-hero p{color:#e2e8f0;max-width:70ch}
+
+    /* Help (FAQ) */
+    details{border:1px solid #e2e8f0;border-radius:16px;background:#fff;padding:18px}
+    details+details{margin-top:12px}
+
+    /* Footer */
+    footer{border-top:1px solid #e2e8f0;background:#fff}
+    /* removed: .social */
+
+    /* Reduced motion respect */
+    @media (prefers-reduced-motion: reduce){.hero-slide{transition:none}}
+  
+    @media(max-width: 767px){
+      .card .body .actions { padding-top:12px; }
+    }
+
+
+    /* Spacing adjustments */
+    .card .footer { margin-top:16px; }
+    #about .inner .btn { margin-top:16px; }
+
+    @media(max-width: 767px){
+      .card .footer { margin-top:12px; }
+      #about .inner .btn { margin-top:12px; }
+    }
+
+
+    /* Ensure News cards remain block layout and tags don't stretch */
+    .grid.news .card { display:block; }
+    .grid.news .card .body { display:block; }
+    .grid.news .card .body .tag { display:inline-block; align-self:auto; }
+
+
+    /* News: keep tag compact, but pin footer at bottom */
+    .grid.news .card { display:flex; flex-direction:column; }
+    .grid.news .card .body { display:block; }
+    .grid.news .card .footer { margin-top:auto; }
+
+
+    
+
+    /* Tighter spacing between section titles and subtitles */
+    .section-head h2 + .muted { margin-top: 2px !important; }
+
+
+    
+
+    /* Responsive spacing between section title and subtitle */
+    .section-head h2 { margin-bottom:4px !important; }
+    .section-head h2 + .muted { margin-top:0 !important; }
+    @media(max-width: 767px){
+      .section-head h2 { margin-bottom:8px !important; }
+    }
+
+
+/* A11y: visible focus for interactive elements */
+:where(a.btn, .nav a, button):focus-visible{
+  outline: 2px solid var(--nx-purple);
+  outline-offset: 2px;
+}
+
+/* === Footer Option A (policy top, split bottom) === */
+footer{border-top:1px solid #e2e8f0;background:#fff}
+.footer-minimalA{padding:32px 16px;display:flex;flex-direction:column;gap:14px}
+footer .policy{display:flex;justify-content:center;align-items:center;gap:12px;color:#475569}
+footer .policy .policy-link{color:inherit}
+footer .policy .policy-link:hover{color:var(--nx-purple)}
+footer .policy .sep{opacity:.4}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px}
+footer .info{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+footer .addr{font-style:normal;line-height:1.5}
+footer .copyright{margin:2px 0 0 0}
+@media(max-width:767px){
+  .footer-minimalA{padding:28px 16px;gap:12px}
+  .footer-bottom{flex-direction:column;align-items:center;text-align:center}
+  footer .info{align-items:center}
+}
+
+/* === Footer: Left logo + policy, Right address + copyright === */
+footer{border-top:1px solid #e2e8f0;background:#fff}
+.footer-leftPolicy{padding:32px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+footer .brand{display:flex;flex-direction:column;gap:10px}
+footer .policy{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:#475569;font-size:.9rem}
+footer .policy-link{color:inherit}
+footer .policy-link:hover{color:var(--nx-purple)}
+footer .policy .sep{opacity:.4}
+footer .info{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+footer .addr{font-style:normal;line-height:1.6}
+footer .copyright{margin:2px 0 0 0}
+@media(max-width:767px){
+  .footer-leftPolicy{padding:28px 16px;flex-direction:column;align-items:center;text-align:center;gap:12px}
+  footer .info{align-items:center}
+}
+
+/* === Careers (Option A: text + CTA left, image card right) === */
+#jobs .careers-left{display:flex;flex-direction:column;justify-content:center}
+#jobs .careers-left h2{margin:0}
+#jobs .careers-right .card{border:1px solid #e2e8f0;border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:transform .5s ease, box-shadow .5s ease}
+#jobs .careers-right .card:hover{transform:scale(1.03);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+#jobs .careers-right .thumb{aspect-ratio:4/3;background:#e2e8f0;overflow:hidden}
+#jobs .careers-right .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+#jobs .careers-right .card:hover .thumb img{transform:scale(1.05)}
+@media(max-width:767px){
+  #jobs .container.two-col{grid-template-columns:1fr !important}
+  #jobs .careers-left{text-align:center;align-items:center}
+  #jobs .careers-left .btn{justify-content:center}
+}
+
+/* === News Header - Option A (desktop link, mobile small button) === */
+.section-head{display:flex;align-items:center;gap:1rem}
+.section-head h2{margin:0}
+.section-head h2 + .muted{margin-top:2px}
+.section-head .actions{margin-left:auto;display:flex;align-items:center}
+.link-more{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;color:#475569}
+.link-more:hover{color:var(--nx-purple)}
+.btn-sm{padding:.45rem .8rem;border-radius:10px;font-size:.9rem}
+.show-sm{display:none}
+.hide-sm{display:inline-flex}
+@media(max-width:767px){
+  .section-head{flex-direction:column;align-items:flex-start}
+  .section-head .actions{width:100%;order:3;margin-top:8px}
+  .section-head .actions .btn{width:100%;justify-content:center}
+  .show-sm{display:inline-flex}
+  .hide-sm{display:none}
+}
+
+/* === News: mobile button below grid === */
+.actions-mobile{margin-top:12px}
+@media(max-width:767px){
+  .actions-mobile .btn{width:100%;justify-content:center}
+}
+
+/* === News: mobile button below grid (centered, with arrow) === */
+.actions-mobile{margin-top:12px;display:flex;justify-content:center}
+@media(max-width:767px){
+  .actions-mobile .btn{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    justify-content:center;
+    gap:.45rem;
+  }
+}
+
+/* === Fix: actions-mobile visibility (desktop hidden, mobile visible) === */
+.actions-mobile{display:none;margin-top:12px}
+@media(max-width:767px){
+  .actions-mobile{display:flex;justify-content:center}
+  .actions-mobile .btn{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    justify-content:center;
+    gap:.45rem;
+  }
+}
+
+
+/* === Remove bottom margin from section subtitles === */
+.section-head .muted{margin-bottom:0 !important}
+
+
+
+/* === Adjust grid top margin to 32px === */
+.grid.news,
+.grid.games{margin-top:32px !important}
+
+
+/* === News header sub-row: subtitle + '모두 보기' on same row (desktop) === */
+.section-head{display:block}
+.section-head h2{margin:0}
+.section-head .sub-row{display:flex;align-items:center;gap:1rem;margin-top:2px}
+.section-head .sub-row .muted{flex:1;margin-bottom:0 !important}
+@media(max-width:767px){
+  .section-head .sub-row{flex-direction:column;align-items:flex-start;gap:6px}
+}
+
+/* === News header: title-wrap with subtitle, link on right === */
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem}
+.title-wrap{display:flex;flex-direction:column}
+.title-wrap h2{margin-bottom:2px}
+.section-head .muted{margin:0}
+@media(max-width:767px){
+  .section-head{flex-direction:column;align-items:flex-start}
+  .section-head .link-more{display:none}
+}
+
+
+/* === Games card radius fix (A안: mask with overflow:hidden) === */
+#games .card{border-radius:18px;overflow:hidden}
+#games .card .thumb{aspect-ratio:16/10;background:#e2e8f0}
+#games .card .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+
+
+/* === About section title size aligned with Hero title === */
+.about-hero h2 {
+  font-size: clamp(28px, 6vw, 64px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+</style>
+<style>.subtitle{font-size:.95rem;color:#475569;margin:.25rem 0 .5rem;}</style><style>
+/* Games: tag pill, outlined, with hover fill (consolidated) */
+#games .card .body > .tag {
+  display: inline-flex;
+  width: auto;
+  max-width: max-content;
+  align-self: flex-start;
+  margin: 0 0 8px 0;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--nx-purple);
+  color: var(--nx-purple);
+  transition: background-color .25s ease, color .25s ease;
+}
+#games .card .body > .tag:hover {
+  background: var(--nx-purple);
+  color: #fff;
+}
+</style>
+<link rel="preload" as="image" href="assets/hero/hero-02.jpg"/>
+<link rel="preload" as="image" href="assets/hero/hero-03.jpg"/>
+<style>
+
+/* === About section title size slightly smaller than Hero === */
+.about-hero h2 {
+  font-size: clamp(26px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+</style>
+<style>
+
+/* === Force remove About overlay (no tint/no dim) === */
+.about-hero::before{
+  background: none !important;
+}
+
+</style>
+<style>
+
+/* === About section text shadow for readability === */
+.about-hero .inner h2,
+.about-hero .inner p {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+</style>
+<style>
+
+/* === About section text shadow (softer) === */
+.about-hero .inner h2,
+.about-hero .inner p {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+
+</style>
+<style>
+
+/* === Mobile Header: Hamburger (left) + Center Logo === */
+.show-sm{display:none}
+.hide-sm{display:flex}
+@media (max-width:767px){
+  .show-sm{display:block}
+  .hide-sm{display:none}
+}
+
+/* Header bar layout */
+header .container{
+  display:flex; align-items:center; justify-content:space-between; height:56px;
+}
+.nav-toggle{display:none}
+.nav-toggle .bar{display:block; width:20px; height:2px; background:#111; margin:3px 0; border-radius:2px}
+@media (max-width:767px){
+  .nav-toggle{display:inline-flex; flex-direction:column; gap:4px; padding:8px; border:0; background:transparent; position:relative; z-index:3}
+  header .logo{position:absolute; left:50%; transform:translateX(-50%); z-index:2}
+  .right-slot{width:32px; height:32px}
+  header .nav{display:none} /* desktop nav hidden on mobile */
+}
+
+/* Offcanvas menu */
+.mnav{
+  position:fixed; inset:0 auto 0 0; width:78%; max-width:320px; background:#fff;
+  transform:translateX(-100%); transition:transform .3s ease; z-index:1001;
+  box-shadow:2px 0 16px rgba(0,0,0,.15);
+}
+.mnav.open{transform:translateX(0)}
+.mnav[hidden]{display:none}
+.mnav-close{position:absolute; top:8px; right:8px; font-size:24px; background:transparent; border:0; padding:8px}
+.mnav-list{margin:56px 0 0; padding:16px}
+.mnav-list a{display:block; padding:12px 8px; color:#111; text-decoration:none; border-radius:10px}
+.mnav-list a:hover{background:#f4f6f8}
+.mnav-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:1000}
+.mnav-backdrop[hidden]{display:none}
+
+</style>
+<style>
+
+/* === Compact hamburger spacing (mobile) === */
+@media (max-width:767px){
+  .nav-toggle{ gap:2px; padding:6px; }
+  .nav-toggle .bar{ margin:2px 0; }
+}
+
+</style>
+</head>
+<body><header>
+<div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:20px 16px">
+    <button class="nav-toggle show-sm" aria-controls="mnav" aria-expanded="false" aria-label="메뉴 열기">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </button>
+
+<a class="logo" href="#top"><img alt="NEXTURE" src="assets/logo/nexture_logo.svg" style="height:28px"/></a>
+    <div class="right-slot show-sm"></div>
+<nav aria-label="주요 메뉴" class="nav">
+<a href="#about">Company</a>
+<a href="#games">Games</a>
+<a href="#news">News</a>
+<a href="#jobs">Careers</a>
+<a href="#help">Contact</a>
+</nav>
+</div>
+</header>
+<aside id="mnav" class="mnav" hidden>
+  <button class="mnav-close" aria-label="메뉴 닫기">×</button>
+  <nav class="mnav-list" aria-label="모바일 메뉴">
+    <a href="#about">Company</a>
+    <a href="#games">Games</a>
+    <a href="#news">News</a>
+    <a href="#jobs">Careers</a>
+    <a href="#help">Contact</a>
+  </nav>
+</aside>
+<div class="mnav-backdrop" hidden></div>
+
+<!-- Hero Slider -->
+<section aria-label="주요 소식 슬라이더" aria-roledescription="carousel" class="hero" id="top" role="region" tabindex="0">
+<!-- Slide 1 -->
+<div class="hero-slide active" data-index="0">
+<img alt="NEXTURE Hero Image" class="hero-media" src="assets/hero/hero-01.jpg"/ loading="eager">
+<div class="gradient"></div>
+<div class="container content">
+<h1>마루는 강쥐:<br/>나 카페 사장 됐다? 짱이지!</h1>
+<p>마루와 함께하는 아기자기한 카페 스토리 SNG</p>
+<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+<a class="btn btn-primary" href="#games">지금 살펴보기
+            <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M5 12h14M13 5l7 7-7 7"></path></svg>
+</a>
+</div>
+</div>
+</div>
+<!-- Slide 2 -->
+<div class="hero-slide" data-index="1">
+<img alt="NEXTURE Hero Image" class="hero-media" src="assets/hero/hero-02.jpg"/ loading="lazy">
+<div class="gradient"></div>
+<div class="container content">
+<h1>아이러브커피,<br/>나만의 아늑한 카페 이야기</h1>
+<p>마루와 함께하는 아기자기한 카페 스토리 SNG</p>
+<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+<a class="btn btn-primary" href="#news">개발 소식 보기</a>
+</div>
+</div>
+</div>
+<!-- Slide 3 -->
+<div class="hero-slide" data-index="2">
+<img alt="NEXTURE Hero Image" class="hero-media" src="assets/hero/hero-03.jpg"/> loading="lazy"
+<div class="gradient"></div>
+<div class="container content">
+<h1>Smart Play,<br/>Infinite Fun with NEXTURE</h1>
+<p>AI로 만드는 나만의 게임 세상</p>
+<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem">
+<a class="btn btn-primary" href="#help">HELP 바로가기</a>
+</div>
+</div>
+</div>
+<div class="container hero-controls" style="display:flex;align-items:center;justify-content:space-between">
+<div aria-label="슬라이드 위치 표시" class="dots"></div>
+<div class="arrows">
+<button aria-label="이전 슬라이드" class="arrow prev">
+<svg fill="none" height="20" stroke="#fff" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M15 18l-6-6 6-6"></path></svg>
+</button>
+<button aria-label="다음 슬라이드" class="arrow next">
+<svg fill="none" height="20" stroke="#fff" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+</div>
+</div>
+</section>
+<main id="main">
+<!-- Latest News -->
+<section id="news" style="background:var(--nx-light)">
+<div class="container">
+<div class="section-head">
+  <div class="title-wrap">
+    <h2>News</h2>
+    <p class="muted">넥스쳐의 최신 소식을 빠르게 확인하세요.</p>
+  </div>
+  <a class="link-more hide-sm" href="#">모두 보기 →</a>
+</div>
+<div class="grid news" style="margin-top:24px">
+<article class="card">
+<div class="body">
+<span class="tag">공지</span>
+<h3 class="news-title">넥스쳐, 신작 티저 공개</h3>
+<p class="muted" style="margin:.5rem 0 0 0">차세대 엔진 기반의 하이파이 그래픽으로 무장한 신작 게임의 티저 영상 공개.</p>
+</div>
+<div class="footer">
+<time datetime="2025-08-10">2025.08.10</time>
+<a href="#">자세히 보기 →</a>
+</div>
+</article>
+<article class="card">
+<div class="body">
+<span class="tag">보도자료</span>
+<h3 class="news-title">글로벌 퍼블리싱 파트너십</h3>
+<p class="muted" style="margin:.5rem 0 0 0">북미·유럽 유수의 퍼블리셔와 전략적 파트너십 체결.</p>
+</div>
+<div class="footer">
+<time datetime="2025-07-28">2025.07.28</time>
+<a href="#">자세히 보기 →</a>
+</div>
+</article>
+<article class="card">
+<div class="body">
+<span class="tag">업데이트</span>
+<h3 class="news-title">서버 안정화 업데이트</h3>
+<p class="muted" style="margin:.5rem 0 0 0">매치메이킹 개선과 랭크 시스템 보강 패치 적용.</p>
+</div>
+<div class="footer">
+<time datetime="2025-07-12">2025.07.12</time>
+<a href="#">자세히 보기 →</a>
+</div>
+</article>
+</div>
+<div class="actions-mobile show-sm">
+  <a class="btn btn-outline btn-sm" href="#">모두 보기 <span aria-hidden="true">→</span></a>
+</div>
+</div>
+</section>
+<!-- Games -->
+<section id="games">
+<div class="container">
+<div class="section-head">
+<div>
+<h2>Games</h2>
+<p class="muted">넥스쳐의 대표 라인업을 만나보세요.</p>
+</div>
+</div>
+<div class="grid games" style="margin-top:24px">
+<article class="card">
+<div class="thumb"><img alt="마루는 강쥐 : 나 카페 사장됐다? 짱이지!" loading="lazy" src="assets/games/maru.jpg"/></div>
+<div class="body">
+<span class="tag">경영 시뮬레이션</span><h3 style="margin:0 0 .25rem 0;font-weight:800">마루는 강쥐 : 나 카페 사장됐다? 짱이지!</h3><p class="subtitle">짱 쎈 마루와 함께하는 우당탕탕 카페 경영 게임</p>
+<div class="actions">
+<a class="btn btn-primary" href="#">플레이</a>
+<a class="btn btn-outline" href="#">상세보기</a>
+</div>
+</div>
+</article>
+<article class="card">
+<div class="thumb"><img alt="아이러브커피" loading="lazy" src="assets/games/ilovecoffee.jpg"/></div>
+<div class="body"><span class="tag">경영 시뮬레이션</span><h3 style="margin:0 0 .25rem 0;font-weight:800">아이러브커피</h3><p class="subtitle">나만의 카페 경영 시뮬레이션 게임</p>
+<div class="actions">
+<a class="btn btn-primary" href="#">플레이</a>
+<a class="btn btn-outline" href="#">상세보기</a>
+</div>
+</div>
+</article>
+<article class="card">
+<div class="thumb"><img alt="아이러브니키" loading="lazy" src="assets/games/ilovenikki.jpg"/></div>
+<div class="body">
+<span class="tag">시뮬레이션</span><h3 style="margin:0 0 .25rem 0;font-weight:800">아이러브니키</h3><p class="subtitle">수천가지 스타일로 완성하는 나만의 걸플레잉 게임</p>
+<div class="actions">
+<a class="btn btn-primary" href="#">플레이</a>
+<a class="btn btn-outline" href="#">상세보기</a>
+</div>
+</div>
+</article>
+<article class="card">
+<div class="thumb"><img alt="아이러브파스타" loading="lazy" src="assets/games/ilovepasta.jpg"/></div>
+<div class="body">
+<span class="tag">경영 시뮬레이션</span><h3 style="margin:0 0 .25rem 0;font-weight:800">아이러브파스타</h3><p class="subtitle">나만의 아기자기한 레스토랑 경영 시뮬레이션 게임</p>
+<div class="actions">
+<a class="btn btn-primary" href="#">플레이</a>
+<a class="btn btn-outline" href="#">상세보기</a>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- Recruiting & Company Intro -->
+<section id="jobs" style="background:var(--nx-light)">
+  <div class="container two-col">
+    <div class="careers-left">
+      <h2>채용안내</h2>
+      <p class="muted" style="margin-top:8px">
+        플레이 문화를 함께 만들어갈 동료를 찾고 있어요.<br/>
+        다양한 직군에서 당신의 역량을 펼쳐보세요.
+      </p>
+      <div style="margin-top:16px">
+        <a class="btn btn-primary" href="#">지원 포지션 보기</a>
+      </div>
+    </div>
+    <div class="careers-right">
+      <article class="card" style="overflow:hidden">
+        <div class="thumb">
+          <img src="assets/jobs/hero.jpg" alt="넥스쳐 오피스 전경" loading="lazy"/>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+<!-- About -->
+<!-- About (Full-Width Banner) -->
+<section id="about" style="padding:0">
+<div class="about-hero" style="background:url('assets/about/about-hero.jpg') center/cover no-repeat;">
+<div class="container inner">
+<h2>넥스쳐는 당신의 일상에<br/>즐거움을 만듭니다.</h2>
+<div style="margin-top:16px;display:flex;justify-content:center"><a class="btn btn-primary" href="#news">조금 더 살펴보기</a></div>
+</div>
+</div>
+</section>
+<!-- Help / FAQ -->
+<section id="help" style="background:var(--nx-light)">
+<div class="container">
+<h2>HELP</h2>
+<p class="muted" style="margin-top:8px">자주 묻는 질문과 고객 지원 안내를 확인하세요.</p>
+<div style="margin-top:16px">
+<details>
+<summary style="cursor:pointer;font-weight:800">계정 보안은 어떻게 설정하나요?</summary>
+<p class="muted" style="margin-top:8px">2단계 인증을 활성화하고 강력한 비밀번호를 설정하세요.</p>
+</details>
+<details>
+<summary style="cursor:pointer;font-weight:800">환불 정책은 어떻게 되나요?</summary>
+<p class="muted" style="margin-top:8px">구매 후 7일 이내, 플레이 시간 2시간 미만이면 환불이 가능합니다.</p>
+</details>
+<details>
+<summary style="cursor:pointer;font-weight:800">문의 채널은 어디인가요?</summary>
+<p class="muted" style="margin-top:8px">support@nexturecorp.com 으로 메일 또는 1:1 문의를 이용하세요.</p>
+</details>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer>
+  <div class="container footer-leftPolicy">
+    <div class="brand">
+      <a href="#top" class="logo" aria-label="홈으로 이동">
+        <img src="assets/logo/nexture_logo.svg" alt="NEXTURE" style="height:28px" />
+      </a>
+      <nav class="policy" aria-label="정책">
+        <a href="#" class="policy-link">개인정보처리방침</a>
+        <span class="sep">·</span>
+        <a href="#" class="policy-link">이용약관</a>
+        <span class="sep">·</span>
+        <a href="#" class="policy-link">청소년보호정책</a>
+      </nav>
+    </div>
+
+    <div class="info">
+      <address class="addr muted">서울특별시 양천구 목동중앙북로 112 2,3층 ㈜넥스쳐</address>
+      <p class="copyright muted">© <span id="year"></span> NEXTURE Corp. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+<script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Simple Hero Slider (no deps) – Figma friendly
+    (function(){
+      const root = document.querySelector('.hero');
+      const slides = Array.from(document.querySelectorAll('.hero-slide'));
+      const dotsWrap = document.querySelector('.dots');
+      const prev = document.querySelector('.prev');
+      const next = document.querySelector('.next');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let idx = 0; let timer = null; const DURATION = 6000;
+
+      function renderDots(){
+        dotsWrap.innerHTML = '';
+        slides.forEach((_, i)=>{
+          const b = document.createElement('div');
+          b.className = 'dot' + (i===idx?' active':'');
+          b.setAttribute('role','button');
+          b.setAttribute('aria-label', `슬라이드 ${i+1} 보기`);
+          b.tabIndex = 0; b.addEventListener('click', ()=>go(i));
+          b.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ go(i); }});
+          dotsWrap.appendChild(b);
+        });
+      }
+
+      function show(i){
+        slides.forEach(s=>s.classList.remove('active'));
+        slides[i].classList.add('active');
+      }
+      function go(i){ idx = (i+slides.length)%slides.length; show(idx); renderDots(); restart(); }
+
+      function restart(){ if(timer){ clearInterval(timer);} if(!reduced){ timer = setInterval(()=>go(idx+1), DURATION);} }
+
+      prev.addEventListener('click', ()=>go(idx-1));
+      next.addEventListener('click', ()=>go(idx+1));
+      root.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft') go(idx-1); if(e.key==='ArrowRight') go(idx+1);});
+
+      show(idx); renderDots(); restart();
+    })();
+  </script>
+
+<script>
+(function(){
+  const btn = document.querySelector('.nav-toggle');
+  const panel = document.getElementById('mnav');
+  const backdrop = document.querySelector('.mnav-backdrop');
+  const closeBtn = document.querySelector('.mnav-close');
+
+  function openNav(){
+    if(!panel) return;
+    panel.hidden = false;
+    requestAnimationFrame(()=> panel.classList.add('open'));
+    if(backdrop) backdrop.hidden = false;
+    if(btn) btn.setAttribute('aria-expanded','true');
+    document.documentElement.style.overflow='hidden';
+  }
+  function closeNav(){
+    if(!panel) return;
+    panel.classList.remove('open');
+    if(btn) btn.setAttribute('aria-expanded','false');
+    if(backdrop) backdrop.hidden = true;
+    document.documentElement.style.overflow='';
+    setTimeout(()=>{ panel.hidden = true; }, 300);
+  }
+
+  btn && btn.addEventListener('click', openNav);
+  closeBtn && closeBtn.addEventListener('click', closeNav);
+  backdrop && backdrop.addEventListener('click', closeNav);
+  window.addEventListener('keydown', e => { if(e.key==='Escape') closeNav(); });
+
+  const mq = window.matchMedia('(max-width: 767px)');
+  const handle = m => { if(!m.matches){ closeNav(); } };
+  mq.addEventListener ? mq.addEventListener('change', handle) : mq.addListener(handle);
+  handle(mq);
+})();
+</script>
+
+</body>
+</html>
